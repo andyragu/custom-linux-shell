@@ -1,111 +1,72 @@
 #include <iostream>
-#include <unistd.h>
-#include <stdio.h>
-#include <stack>
+#include <cstdio>
 #include <sstream>
-#include <string>
+#include <cstring>
 #include <format>
-#include <dirent.h>
+
+#define MAX_INPUT 1024   // Maximum length of user input
+#define MAX_ARGS 64      // Maximum number of arguments
 
 
-std::string handlePwd() {
-
-    constexpr size_t size = 1024;
-    char buffer[size];
-
-    return std::format("Path\n_____ \n{}\n", getcwd(buffer, size));
-}
-
-std::string handleCdInput(std::string input) {
+std::string handleCd(std::string input) {
     /**
     * TODO
     **/
+    return input;
 }
 
-std::string handleLsInput() {
-    constexpr size_t size = 1024;
-    char buffer[size];
+// Function to read users inputs and stores in an array
+void readInput(char *input) {
+    const char* user = getenv("USER");
+    std::cout << user <<  ":~$ " << std::flush;
 
-    const char *path = getcwd(buffer, size);
-
-    DIR *dir = opendir(path);
-
-    struct dirent *entry;
-    while ((entry = readdir(dir)) != nullptr) {
-        if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0) {
-            continue;
-        }
-        printf("%s ", entry->d_name);
+    if (fgets(input, MAX_INPUT, stdin) == nullptr) {
+        std::cout << "\nExiting...\n" << std::endl;
+        exit(EXIT_SUCCESS);
     }
 
-    closedir(dir);
-    return "";
+    input[strcspn(input, "\n")] = 0;
 }
 
-std::string commands(std::string input) {
+// Function to parse users inputs into cmds + args
+void parseInput() {
 
-    std::stringstream ss(input);
-    std::string command;
-    ss >> command;
-
-    std::string cmdStr;
-
-    if (command == "exit") {
-        return "exit";
-    }
-
-    if (command == "pwd") {
-        cmdStr = handlePwd();
-    }
-    else if (command == "cd") {
-        /**
-         * Needs to handle different cases
-         * relative path (cd path)
-         * absolute path (cd /abs/path)
-         * cd .. (one up)
-         * cd ../.. (multiple levels)
-         * cd . (curr path but should succeed
-        **/
-        cmdStr = handleCdInput(input);
-    }
-    else if (command == "ls") {
-        /**
-         * Look at opendir()
-        **/
-
-        cmdStr = handleLsInput();
-    }
-
-    return cmdStr;
 }
 
-std::string inputHandling() {
 
-    std::string input;
-    getline(std::cin, input);
+// Function to handle built in commands
+int builtInCmds(char **args) {
+    /**
+     * Check if first element of command history is built in
+     * If it is call helper function
+     * If it isnt return 0
+    **/
 
-    std::string output;
-
-    if (!input.empty()) {
-        output = commands(input);
-    }
-
-    return output;
+    // Exit
+    // cd
+    // help
+    return 0;
 }
 
-int main() {
-
+// Function to print banner
+void banner() {
     std::cout << "***********************************************************************************" << std::endl;
     std::cout << std::endl;
     std::cout << "************************************ Custom Shell *********************************" << std::endl;
     std::cout << std::endl;
     std::cout << "***********************************************************************************" << std::endl;
+}
+
+int main() {
+    char input[MAX_INPUT];
+    char *args1[MAX_ARGS], *args2[MAX_ARGS];
+
+    banner();
 
     while (true) {
-        std::cout << ">> ";
-        std::string line = inputHandling();
-        if (line == "exit") break;
-        std::cout << line << std::endl;
+        readInput(input);
+
+        // if (strlen(input) == 0) continue;
     }
 
 
